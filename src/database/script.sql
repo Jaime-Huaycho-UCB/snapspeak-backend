@@ -30,7 +30,7 @@ create table dictionary(
 );
 
 create table user_vocabularies(
-	id_vocabulary bigint,
+	id_vocabulary bigserial,
 	id_user int not null,
 	id_word int not null,
 	image_url varchar(500) not null,
