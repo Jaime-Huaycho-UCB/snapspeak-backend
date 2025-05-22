@@ -32,6 +32,18 @@ export class UsersService {
 		return user;
 	}
 
+	async findOne(idUser: number){
+		const user = await this.userRepository.findOne({
+			where: {
+				id: idUser
+			}
+		})
+		if (!user){
+			throw new HttpException('No se encontro al usuario',404);
+		}
+		return user;
+	}
+
 	async findAll(){
 		const user = await this.userRepository.find();
 		return user;

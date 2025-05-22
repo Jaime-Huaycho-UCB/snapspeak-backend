@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { UserVocabulary } from "src/modules/user-vocabularies/entities/user-vocabulary.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class User {
@@ -10,4 +11,7 @@ export class User {
 
     @Column({name: 'password'})
     password: string
+
+    @OneToMany(() => UserVocabulary,(vocabulary) => vocabulary.user)
+    vocabularies: UserVocabulary[]
 }

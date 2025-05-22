@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateDictionaryDto } from '../dto/create-dictionary.dto';
 import { UpdateDictionaryDto } from '../dto/update-dictionary.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Dictionary } from '../entities/dictionary.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { LanguagesService } from 'src/modules/languages/services/languages.service';
 
 @Injectable()
@@ -12,14 +12,19 @@ export class DictionaryService {
 		@InjectRepository(Dictionary)
 		private readonly dictionaryRepository: Repository<Dictionary>,
 		private readonly languagesService: LanguagesService
-	){}
+	) { }
 
 	async create(data: CreateDictionaryDto) {
 		const language = await this.languagesService.findOne(data.idLanguage);
-		const word = new Dictionary();
-		word.word = data.word;
-		word.language = language;
-		word.translated = data.translated;
+		let word;
+		try {
+			word = await this.findOne(data.word,data.idLanguage,data.translated);
+		} catch (error) {
+			word = new Dictionary();
+			word.word = data.word.toLowerCase().trim();
+			word.language = language;
+			word.translated = data.translated.toLowerCase().trim();
+		}
 		const wordSaved = await this.dictionaryRepository.save(word);
 		return wordSaved;
 	}
@@ -33,8 +38,20 @@ export class DictionaryService {
 		return dictionary;
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} dictionary`;
+	async findOne(word: string,idLanguage: number,translated: string) {
+		const dictionary = await this.dictionaryRepository.findOne({
+			where: {
+				word: word,
+				language: {
+					id: idLanguage
+				},
+				translated: translated
+			}
+		})
+		if (!dictionary) {
+			throw new HttpException('No se encontro la palabra en el disccionario', 404);
+		}
+		return dictionary;
 	}
 
 	update(id: number, updateDictionaryDto: UpdateDictionaryDto) {

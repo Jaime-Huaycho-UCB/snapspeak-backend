@@ -1,5 +1,6 @@
 import { Language } from "src/modules/languages/entities/language.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { UserVocabulary } from "src/modules/user-vocabularies/entities/user-vocabulary.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('dictionary')
 export class Dictionary {
@@ -15,4 +16,7 @@ export class Dictionary {
 
     @Column({name: 'translated'})
     translated: string
+
+    @OneToMany(() => UserVocabulary,(vocabulary) => vocabulary.dictionary)
+    userVocabularies: UserVocabulary[]
 }
