@@ -4,10 +4,11 @@ import { CreateUserVocabularyDto } from './dto/create-user-vocabulary.dto';
 import { UpdateUserVocabularyDto } from './dto/update-user-vocabulary.dto';
 import { Response } from 'express';
 import { responseError } from 'src/common/helpers/out.helper';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DtoResponse, swaggerRes404 } from 'src/common/helpers/classes.dto';
 import { UserVocabularyDto } from './dto/user-vocabulary.dto';
 
+@ApiTags('Vocabularios de usuario')
 @Controller('user-vocabularies')
 export class UserVocabulariesController {
 	constructor(private readonly userVocabulariesService: UserVocabulariesService) { }
