@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Dictionary } from "src/modules/dictionary/entities/dictionary.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('languages')
 export class Language {
@@ -10,4 +11,7 @@ export class Language {
 
     @Column({name: 'name'})
     name: string
+
+    @OneToMany(() => Dictionary,(word) => word.language)
+    words: Dictionary[]
 }

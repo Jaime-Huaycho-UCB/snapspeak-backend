@@ -1,34 +1,50 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { DictionaryService } from './dictionary.service';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { DictionaryService } from './services/dictionary.service';
 import { CreateDictionaryDto } from './dto/create-dictionary.dto';
 import { UpdateDictionaryDto } from './dto/update-dictionary.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
+import { responseError } from 'src/common/helpers/out.helper';
+import { DtoResponse } from 'src/common/helpers/classes.dto';
+import { WordDto } from './dto/word.dto';
 
+@ApiTags('Diccionario')
 @Controller('dictionary')
 export class DictionaryController {
-  constructor(private readonly dictionaryService: DictionaryService) {}
+	constructor(private readonly dictionaryService: DictionaryService) { }
 
-  @Post()
-  create(@Body() createDictionaryDto: CreateDictionaryDto) {
-    return this.dictionaryService.create(createDictionaryDto);
-  }
+	@Post()
+	@ApiOperation({summary: 'Api para agregar una palabra al diccionario global'})
+	@ApiResponse({
+		description: 'Respuesta en caso de agregar la palabra exitosamente',
+		status: 200,
+		type: DtoResponse
+	})
+	async create(@Body() data: CreateDictionaryDto,@Res() res: Response) {
+		try {
+			const wordSaved = await this.dictionaryService.create(data);
+			return res.status(200).json({
+				code: 200,
+				message: 'La palabra se agrego al diccionario global exitosamente'
+			})
+		} catch (error) {
+			return responseError(error,res);
+		}
+	}
 
-  @Get()
-  findAll() {
-    return this.dictionaryService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.dictionaryService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDictionaryDto: UpdateDictionaryDto) {
-    return this.dictionaryService.update(+id, updateDictionaryDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.dictionaryService.remove(+id);
-  }
+	@Get()
+	@ApiOperation({summary: 'Api para obtener todas las palabras del diccionario'})
+	@ApiResponse({
+		description: 'Respuesta en caso de obtener el diccionario exitosamente',
+		status: 200,
+		type: [WordDto]
+	})
+	async findAll(@Res() res: Response) {
+		try {
+			const dictionary = await this.dictionaryService.findAll();
+			return res.status(200).json(dictionary);
+		} catch (error) {
+			return responseError(error,res);
+		}
+	}
 }
