@@ -53,6 +53,20 @@ export class DictionaryService {
 		}
 		return dictionary;
 	}
+	async findOneByWord (word: string,idLanguage: number){
+		const dictionary = await this.dictionaryRepository.findOne({
+			where: {
+				word: word,
+				language: {
+					id: idLanguage
+				}
+			},
+			relations: {
+				language: true
+			}
+		})
+		return dictionary;
+	}
 
 	update(id: number, updateDictionaryDto: UpdateDictionaryDto) {
 		return `This action updates a #${id} dictionary`;

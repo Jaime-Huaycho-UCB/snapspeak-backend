@@ -47,4 +47,20 @@ export class DictionaryController {
 			return responseError(error,res);
 		}
 	}
+
+	@Get(':word/:idLanguage')
+	@ApiOperation({summary: 'Api para obtener una palabra del diccionario por palabra e idioma'})
+	@ApiResponse({
+		description: 'respuesta en caso de obtener la palabra exisamente',
+		status: 200,
+		type: WordDto
+	})
+	async findOneByWord(@Param('word') word: string,@Param('idLanguage') idLanguage: string,@Res() res: Response){
+		try {
+			const dictionary = await this.dictionaryService.findOneByWord(word,parseInt(idLanguage));
+			return res.status(200).json(dictionary);
+		} catch (error) {
+			return responseError(error,res);
+		}
+	}
 }
